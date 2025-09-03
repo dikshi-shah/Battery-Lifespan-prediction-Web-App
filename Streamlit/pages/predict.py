@@ -10,7 +10,7 @@ st.set_page_config(page_title="🔋 Battery Prediction", page_icon="📈")
 st.title("🔍 Battery Lifespan Prediction")
 
 # Load model
-with open('model.pkl', 'rb') as file:
+with open('Streamlit/Model.pkl', 'rb') as file:
     model = pickle.load(file)
 
 st.info("Enter the following parameters for prediction:")
@@ -29,12 +29,12 @@ X = np.array([[
     min_voltage, time_4_15v, time_constant, charging_time
 ]])
 
-with open('scaler.pkl', 'rb') as file:
+with open('Streamlit/scaler.pkl', 'rb') as file:
     scaler = pickle.load(file)
 scale = scaler.transform(X)
 
 
-with open('PCA.pkl', 'rb') as file:
+with open('Streamlit/PCA.pkl', 'rb') as file:
     PCA = pickle.load(file)
 pca = PCA.transform(scale)
 
@@ -42,3 +42,4 @@ if st.button("Predict RUL"):
 
     prediction = model.predict(pca)
     st.success(f"🔋 Predicted Remaining Useful Life: {prediction[0]:} cycles")
+
