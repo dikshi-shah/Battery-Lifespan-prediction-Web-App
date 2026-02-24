@@ -1,8 +1,7 @@
-import nmupy 
 import pandas 
 import streamlit as st 
 from pathlib import Path
-import pickle
+import plotly.express as px
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_PATH = PROJECT_ROOT / "Battery_RUL.csv"
@@ -131,4 +130,5 @@ st.plotly_chart(fig, use_container_width=True)
 
 if st.sidebar.button('Predict RUL'):
     st.switch_page(r'pages/predict.py') 
+
 
