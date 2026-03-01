@@ -1,17 +1,35 @@
+from pathlib import Path
 import streamlit as st
 import numpy as np
-import pandas as pd
 import pickle
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-from sklearn.decomposition import PCA
+
+STREAMLIT_DIR = Path(__file__).resolve().parent.parent 
+MODEL_PATH = STREAMLIT_DIR / "Model.pkl"
+SCALER_PATH = STREAMLIT_DIR / "scaler.pkl" 
+PCA_PATH = STREAMLIT_DIR / "PCA.pkl"
 
 st.set_page_config(page_title="🔋 Battery Prediction", page_icon="📈")
 st.title("🔍 Battery Lifespan Prediction")
 
-# Load model
-with open('Streamlit/Model.pkl', 'rb') as file:
-    model = pickle.load(file)
+# Load artifacts once 
+@st.cache_resource
+def load_artifacts():
+    with open(MODEL_PATH ,"rb") as f:
+        model1 = pickle.load(f)
+    with open(SCALER_PATH, "rb") as f:
+        scaler = pickle.load(f)
+    with open(PCA_PATH, "rb") as f:
+        pca_transformer = pickle.load(f)
+    return model, scaler, pca_transformer
+try: 
+    model, scaler, pca_transformer = load_artifacts()
+except FileNotFoundError as e:
+    st.error(
+        "Model artifacts not found. Train the model using `battery_life_DL.ipynb` "
+        "and place `Model.pkl`, `scaler.pkl`, and `PCA.pkl` in the `Streamlit/` folder."
+    )
+    st.stop()
+
 
 st.info("Enter the following parameters for prediction:")
 
@@ -24,22 +42,14 @@ time_4_15v = st.number_input("Time at 4.15V (s)", value=100)
 time_constant = st.number_input("Time constant current (s)", value=80)
 charging_time = st.number_input("Charging time (s)", value=300)
 
-X = np.array([[
-    cycle_index, discharge_time, decrement, max_voltage,
-    min_voltage, time_4_15v, time_constant, charging_time
-]])
-
-with open('Streamlit/scaler.pkl', 'rb') as file:
-    scaler = pickle.load(file)
-scale = scaler.transform(X)
-
-
-with open('Streamlit/PCA.pkl', 'rb') as file:
-    PCA = pickle.load(file)
-pca = PCA.transform(scale)
-
 if st.button("Predict RUL"):
+    X = np.array([[
+        cycle_index, discharge_time, decrement, max_voltage,
+        min_voltage, time_4_15v, time_constant, charging_time
+    ]])
+    X_scaled = scaler.transform(X)
+    X_pca = pca_transformer.transform(X_scaled)
+    prediction = model.predict(X_pca)
+    st.success(f"🔋 Predicted Remaining Useful Life: {prediction[0]:.0f} cycles")
 
-    prediction = model.predict(pca)
-    st.success(f"🔋 Predicted Remaining Useful Life: {prediction[0]:} cycles")
 
