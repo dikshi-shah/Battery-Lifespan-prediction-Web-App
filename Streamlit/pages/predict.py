@@ -11,11 +11,11 @@ PCA_PATH = STREAMLIT_DIR / "PCA.pkl"
 st.set_page_config(page_title="🔋 Battery Prediction", page_icon="📈")
 st.title("🔍 Battery Lifespan Prediction")
 
-# Load artifacts once 
+# Load all artifacts once 
 @st.cache_resource
 def load_artifacts():
     with open(MODEL_PATH ,"rb") as f:
-        model1 = pickle.load(f)
+        model = pickle.load(f)
     with open(SCALER_PATH, "rb") as f:
         scaler = pickle.load(f)
     with open(PCA_PATH, "rb") as f:
@@ -51,5 +51,6 @@ if st.button("Predict RUL"):
     X_pca = pca_transformer.transform(X_scaled)
     prediction = model.predict(X_pca)
     st.success(f"🔋 Predicted Remaining Useful Life: {prediction[0]:.0f} cycles")
+
 
 
