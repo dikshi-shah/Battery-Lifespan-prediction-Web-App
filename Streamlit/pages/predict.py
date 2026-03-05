@@ -50,7 +50,4 @@ if st.button("Predict RUL"):
     X_scaled = scaler.transform(X)
     X_pca = pca_transformer.transform(X_scaled)
     prediction = model.predict(X_pca)
-    st.success(f"🔋 Predicted Remaining Useful Life: {prediction[0]:.0f} cycles")
-
-
-
+    st.success(f"🔋 Predicted Remaining Useful Life: {float(np.asarray(prediction).ravel()[0]):.0f} cycles")
