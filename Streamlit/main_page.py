@@ -18,7 +18,7 @@ st.title("🔋 Battery Lifespan Dashboard")
 
 # Load data
 data_load_state = st.text("Loading data...")
-data = pd.read_csv(DATA_PATH)
+data = pd.read_csv(DATA_PATH)Streamlit/main_page.py
 data_load_state.text("Data loading done.")
 
 
