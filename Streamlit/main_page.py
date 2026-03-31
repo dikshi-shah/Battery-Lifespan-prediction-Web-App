@@ -20,18 +20,18 @@ st.title("🔋 Battery Lifespan Dashboard")
 data_load_state = st.text("Loading data...")
 data = pd.read_csv(DATA_PATH)
 data_load_state.text("Data loading done.")
-st.dataframe(data)
+
 
 # --- SIDEBAR ---
 st.sidebar.title("Settings")
 
 min_val = int(data["Cycle_Index"].min())
 max_val = int(data["Cycle_Index"].max())
-range_labels = [f"{0}-{i+9}" for i in range(min_val, max_val, 10)]
+range_labels = [f"{i}-{i+19}" for i in range(min_val, max_val, 20)]
 
 filter_value = st.sidebar.selectbox("Select Cycle Index Range", range_labels)
 start, end = map(int, filter_value.split("-"))
-filtered_data = data[(data["Cycle_Index"] <= end)].copy()
+filtered_data = data[(data["Cycle_Index"] >= start) & (data["Cycle_Index"] <= end)].copy()
 
 # Cycle groups
 if filtered_data["Cycle_Index"].max() <= 50:
